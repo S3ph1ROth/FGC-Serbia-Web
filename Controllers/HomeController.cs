@@ -68,10 +68,9 @@ namespace FGCSerbiaWeb.Controllers
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", "ly3mc8y9bsjnsu0avaj5odzfkdjb46");
 
                 //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
-                HttpResponseMessage Res = await client.GetAsync("https://api.twitch.tv/helix/streams?user_login=avoidingthepuddle" +
-                                                                                                   "&user_login=tkgodpling" +
-                                                                                                   "&user_login=s3ph1roth" + 
-                                                                                                   "&user_login=thenameismyk");
+                HttpResponseMessage Res = await client.GetAsync("https://api.twitch.tv/helix/streams?user_login=gamesdonequick" +
+                                                                                                   "&user_login=legendarymihawk" +
+                                                                                                   "&user_login=superakouma");
 
                 //Checking the response is successful or not which is sent using HttpClient  
                 if (Res.IsSuccessStatusCode)

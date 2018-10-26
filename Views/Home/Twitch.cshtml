@@ -3,35 +3,71 @@
     ViewData["Title"] = "Twitch";
 }
 
-<div class="row">
-    @{
-        int i = 1;
-        foreach (var stream in Model)
-        {
-            string id = "twitch-embed" + i;
-            <div id="@id" class="col-lg-6 col-md-6 twitch-embed">
 
-                <!-- Load the Twitch embed script -->
-                <script src="https://embed.twitch.tv/embed/v1.js"></script>
 
-                <!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
-                <script type="text/javascript">
-                    var embed = new Twitch.Embed("@id", {
-                        width: "100%",
-                        height: "90%",
-                        channel: "@stream.user_name",
-                        layout: "video",
-                        autoplay: false
-                    });
+<div id="list" class="row">
 
-                    embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
-                        var player = embed.getPlayer();
-                        //player.play();
-                    });
-                </script>
-                <p>Streamer: @stream.user_name</p>
-            </div>
-            i++;
+    <!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
+    <script type="text/javascript">
+        function myFunction() {
+            var div = document.createElement("div");
+            var id = arguments[0];
+            var username = arguments[1];
+            var master = document.getElementById("list");
+            var li = document.getElementById("li_" + id);
+            var li_id = li.getAttribute("id");
+            var li_class = li.getAttribute("class");
+            $(li).remove();
+            div.setAttribute("id", id);
+            div.setAttribute("class", "col-lg-6 col-md-6 twitch-embed");
+            master.insertBefore(div, document.getElementById("addStream"));
+            new Twitch.Embed(id, {
+                width: "100%",
+                height: "90%",
+                channel: username,
+                layout: "video"
+            });
+            var button = document.createElement("BUTTON");
+            button.innerHTML = "Remove stream";
+            div.appendChild(button);
+            button.setAttribute("class", "btn btn-dark");
+            button.setAttribute("id", "removeDiv");
+            $(removeDiv).click(function (e) {
+                $(buttons).append("<li id = '" + li_id + "'class = '" + li_class + "' onclick = \"myFunction(" + "'" + id + "'" + ", " + "'" + username + "'" + ")\">" + username + "</li>");
+                $(this).parent('div').remove();
+            });
         }
-    }
+    </script>
+
+    <!-- Button trigger modal -->
+    <div class="col-lg-6 col-md-6" id="addStream">
+        <button type="button" class="btn btn-dark btn-circle btn-lg" data-toggle="modal" data-target="#exampleModalCenter">
+            Add a stream <i class="fas fa-plus"></i>
+        </button>
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">List of online streamers</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="buttons" onload="list.sort()">
+                            @{foreach (var stream in Model)
+                                {
+                                    <li id="li_@stream.id" class="btn-link" onclick="myFunction('@stream.id', '@stream.user_name')">@stream.user_name</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Load the Twitch embed script -->
+
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
 </div>
