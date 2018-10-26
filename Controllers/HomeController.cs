@@ -1,7 +1,11 @@
-﻿using System;
+﻿using FGCSerbiaWeb.Models;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace FGCSerbiaWeb.Controllers
@@ -32,17 +36,55 @@ namespace FGCSerbiaWeb.Controllers
 
             return View();
         }
-        public ActionResult Twitch()
-        {
-            ViewBag.Message = "Your twitch page.";
+        //public ActionResult Twitch()
+        //{
+        //    ViewBag.Message = "Your twitch page.";
 
-            return View();
-        }
+        //    return View();
+        //}
         public ActionResult Meetups()
         {
             ViewBag.Message = "Your meetups page.";
 
             return View();
+        }
+
+        readonly string Baseurl = "https://api.twitch.tv/kraken/users/44322889?client_id=dyw2v1kn7zglk676f4pldux07apn4b";
+        public async Task<ActionResult> Twitch()
+        {
+            var EmpInfo = new TwitchResponse();
+
+            using (var client = new HttpClient())
+            {
+                //Passing service base url  
+                client.BaseAddress = new Uri(Baseurl);
+
+                client.DefaultRequestHeaders.Clear();
+                //Define request data format  
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.twitchtv.v5+json"));
+
+                client.DefaultRequestHeaders.Add("Client-ID", "dyw2v1kn7zglk676f4pldux07apn4b");
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", "ly3mc8y9bsjnsu0avaj5odzfkdjb46");
+
+                //Sending request to find web api REST service resource GetAllEmployees using HttpClient  
+                HttpResponseMessage Res = await client.GetAsync("https://api.twitch.tv/helix/streams?user_login=avoidingthepuddle" +
+                                                                                                   "&user_login=tkgodpling" +
+                                                                                                   "&user_login=s3ph1roth" + 
+                                                                                                   "&user_login=thenameismyk");
+
+                //Checking the response is successful or not which is sent using HttpClient  
+                if (Res.IsSuccessStatusCode)
+                {
+                    //Storing the response details recieved from web api   
+                    var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+
+                    //Deserializing the response recieved from web api and storing into the Employee list  
+                    EmpInfo = JsonConvert.DeserializeObject<TwitchResponse>(EmpResponse);
+                }
+                //returning the employee list to view  
+                return View(EmpInfo.data);
+            }
         }
     }
 }
